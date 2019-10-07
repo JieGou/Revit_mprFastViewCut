@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ModPlusAPI">
-      <HintPath>..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPI">
@@ -53,5 +53,14 @@
     <Compile Include="ModPlusConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\mprFastViewCut_16x16.png" />
+    <Resource Include="Resources\mprFastViewCut_32x32.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+"$(ModPlusPostBuild)" "Revit" "$(TargetPath)" "s"
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

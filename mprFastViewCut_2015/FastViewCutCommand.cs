@@ -13,6 +13,8 @@
     [Regeneration(RegenerationOption.Manual)]
     public class FastViewCutCommand : IExternalCommand
     {
+        private string Li => new ModPlusConnector().Name;
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
@@ -22,25 +24,29 @@
                 var activeView = commandData.Application.ActiveUIDocument.Document.ActiveView;
                 if (activeView.IsTemplate)
                 {
-                    MessageBox.Show("Not work in templates!");
+                    // Работа в шаблоне вида невозможна
+                    MessageBox.Show(GetLocalValue("h1"));
                     return Result.Cancelled;
                 }
 
                 if (activeView.ViewType == ViewType.Legend)
                 {
-                    MessageBox.Show("Not work in Legends!");
+                    // Работа в легендах невозможна
+                    MessageBox.Show(GetLocalValue("h2"));
                     return Result.Cancelled;
                 }
 
                 if (activeView.ViewType == ViewType.Schedule)
                 {
-                    MessageBox.Show("Not work in Schedule!");
+                    // Работа в спецификациях невозможна
+                    MessageBox.Show(GetLocalValue("h3"));
                     return Result.Cancelled;
                 }
 
                 if (activeView.ViewType == ViewType.DraftingView)
                 {
-                    MessageBox.Show("Not work in DraftingView!");
+                    // Работа в чертежных видах невозможна
+                    MessageBox.Show(GetLocalValue("h4"));
                     return Result.Cancelled;
                 }
 
@@ -61,11 +67,13 @@
 
         private void CutView(UIApplication uiApplication)
         {
+            var trName = Language.GetFunctionLocalName(new ModPlusConnector().Name, new ModPlusConnector().LName);
             var uiDoc = uiApplication.ActiveUIDocument;
             var doc = uiDoc.Document;
             var selection = uiDoc.Selection;
 
-            var pickedBox = selection.PickBox(PickBoxStyle.Crossing, "pROMPT");
+            // Укажите прямоугольную область для создания границ подрезки
+            var pickedBox = selection.PickBox(PickBoxStyle.Crossing, GetLocalValue("h5"));
 
             var view = doc.ActiveView;
 
@@ -88,7 +96,7 @@
                 bb.Max = new XYZ(xMax, yMax, bb.Max.Z);
                 bb.Min = new XYZ(xMin, yMin, bb.Min.Z);
 
-                using (var tr = new Transaction(doc, "Crop"))
+                using (var tr = new Transaction(doc, trName))
                 {
                     tr.Start();
                     if (!view.CropBoxActive)
@@ -125,7 +133,7 @@
 
                 if (curveLoop.IsRectangular(CreatePlane(view.ViewDirection, view.Origin)))
                 {
-                    using (var tr = new Transaction(doc, "Crop"))
+                    using (var tr = new Transaction(doc, trName))
                     {
                         tr.Start();
                         if (!view.CropBoxActive)
@@ -143,7 +151,8 @@
                 }
                 else
                 {
-                    MessageBox.Show("Ooops! Not Rectangular");
+                    // Не удалось получить валидную прямоугольную область. Попробуйте еще раз
+                    MessageBox.Show(GetLocalValue("h6"));
                 }
             }
         }
@@ -153,7 +162,7 @@
 #if R2015 || R2016
             return new Plane(vectorNormal, origin);
 #else
-                        return Plane.CreateByNormalAndOrigin(vectorNormal, origin);
+            return Plane.CreateByNormalAndOrigin(vectorNormal, origin);
 #endif
         }
 
@@ -165,6 +174,11 @@
         private double GetSmaller(double d1, double d2)
         {
             return d1 < d2 ? d1 : d2;
+        }
+
+        private string GetLocalValue(string key)
+        {
+            return Language.GetItem(Li, key);
         }
     }
 }
