@@ -75,6 +75,9 @@
             // Укажите прямоугольную область для создания границ подрезки
             var pickedBox = selection.PickBox(PickBoxStyle.Crossing, GetLocalValue("h5"));
 
+            if (Math.Abs(pickedBox.Min.DistanceTo(pickedBox.Max)) < 0.001)
+                return;
+
             var view = doc.ActiveView;
 
             if (view is View3D view3D)
