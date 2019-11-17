@@ -1,4 +1,5 @@
-﻿namespace mprFastViewCut
+﻿#pragma warning disable SA1600 // Elements should be documented
+namespace mprFastViewCut
 {
     using System;
     using System.Collections.Generic;
@@ -58,3 +59,4 @@
         public List<string> SubClassNames => new List<string>();
     }
 }
+#pragma warning restore SA1600 // Elements should be documented

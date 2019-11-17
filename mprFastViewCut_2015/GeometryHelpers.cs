@@ -7,6 +7,7 @@
     public static class GeometryHelpers
     {
         // http://thebuildingcoder.typepad.com/blog/2014/09/planes-projections-and-picking-points.html
+        
         /// <summary>
         /// Return signed distance from plane to a given point.
         /// </summary>
@@ -27,7 +28,7 @@
         {
             var d = plane.SignedDistanceTo(p);
 
-            var q = p - d * plane.Normal;
+            var q = p - (d * plane.Normal);
 
             Debug.Assert(
                 IsZero(plane.SignedDistanceTo(q)),
@@ -50,6 +51,7 @@
         {
             return IsZero(b - a);
         }
+
         private const double Eps = 1.0e-9;
     }
 }

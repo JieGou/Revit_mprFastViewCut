@@ -9,12 +9,14 @@
     using ModPlusAPI;
     using ModPlusAPI.Windows;
 
+    /// <inheritdoc />
     [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
     public class FastViewCutCommand : IExternalCommand
     {
-        private string Li => new ModPlusConnector().Name;
+        private static string Li => new ModPlusConnector().Name;
 
+        /// <inheritdoc />
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
@@ -115,8 +117,7 @@
             else
             {
                 var cropRegionShapeManager = view.GetCropRegionShapeManager();
-
-
+                
                 var pt1 = pickedBox.Min;
                 var pt3 = pickedBox.Max;
                 var plane = CreatePlane(view.UpDirection, pt3);
@@ -160,7 +161,7 @@
             }
         }
 
-        public static Plane CreatePlane(XYZ vectorNormal, XYZ origin)
+        private static Plane CreatePlane(XYZ vectorNormal, XYZ origin)
         {
 #if R2015 || R2016
             return new Plane(vectorNormal, origin);
@@ -169,17 +170,17 @@
 #endif
         }
 
-        private double GetBigger(double d1, double d2)
+        private static double GetBigger(double d1, double d2)
         {
             return d1 > d2 ? d1 : d2;
         }
 
-        private double GetSmaller(double d1, double d2)
+        private static double GetSmaller(double d1, double d2)
         {
             return d1 < d2 ? d1 : d2;
         }
 
-        private string GetLocalValue(string key)
+        private static string GetLocalValue(string key)
         {
             return Language.GetItem(Li, key);
         }
