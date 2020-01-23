@@ -77,7 +77,7 @@
             // Укажите прямоугольную область для создания границ подрезки
             var pickedBox = selection.PickBox(PickBoxStyle.Crossing, GetLocalValue("h5"));
 
-            if (Math.Abs(pickedBox.Min.DistanceTo(pickedBox.Max)) < 0.001)
+            if (pickedBox.Min.DistanceTo(pickedBox.Max) < UnitUtils.ConvertToInternalUnits(1.0, DisplayUnitType.DUT_MILLIMETERS))
                 return;
 
             var view = doc.ActiveView;
@@ -125,10 +125,17 @@
                 plane = CreatePlane(view.UpDirection, pt1);
                 var pt4 = plane.ProjectOnto(pt3);
 
-                var line1 = Line.CreateBound(pt1, pt2);
-                var line2 = Line.CreateBound(pt2, pt3);
-                var line3 = Line.CreateBound(pt3, pt4);
-                var line4 = Line.CreateBound(pt4, pt1);
+                var line1 = TryCreateLine(pt1, pt2);
+                var line2 = TryCreateLine(pt2, pt3);
+                var line3 = TryCreateLine(pt3, pt4);
+                var line4 = TryCreateLine(pt4, pt1);
+
+                if (line1 == null || line2 == null || line3 == null || line4 == null)
+                {
+                    // Не удалось получить валидную прямоугольную область. Попробуйте еще раз
+                    MessageBox.Show(GetLocalValue("h6"));
+                    return;
+                }
 
                 var curveLoop = CurveLoop.Create(new List<Curve>
                 {
@@ -183,6 +190,21 @@
         private static string GetLocalValue(string key)
         {
             return Language.GetItem(Li, key);
+        }
+
+        private static Line TryCreateLine(XYZ pt1, XYZ pt2)
+        {
+            try
+            {
+                if (pt1.DistanceTo(pt2) < UnitUtils.ConvertToInternalUnits(1.0, DisplayUnitType.DUT_MILLIMETERS))
+                    return null;
+
+                return Line.CreateBound(pt1, pt2);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
