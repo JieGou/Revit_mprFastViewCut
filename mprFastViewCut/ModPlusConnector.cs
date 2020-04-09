@@ -23,9 +23,10 @@ namespace mprFastViewCut
         public string AvailProductExternalVersion => "2019";
 #elif R2020
         public string AvailProductExternalVersion => "2020";
+#elif R2021
+        public string AvailProductExternalVersion => "2021";
 #endif
-
-
+        
         public string FullClassName => "mprFastViewCut.FastViewCutCommand";
 
         public string AppFullClassName => string.Empty;
